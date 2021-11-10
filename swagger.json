@@ -1,0 +1,157 @@
+{
+  "basePath": "/",
+  "consumes": [
+    "application/json"
+  ],
+  "definitions": {
+    "User": {
+      "properties": {
+        "Id": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Mail": {
+          "type": "string"
+        },
+        "Age": {
+          "type": "string"
+        }
+      },
+      "type": "object",
+      "x-go-package": "softserve-academy-hw/StructUser"
+    }
+  },
+  "host": "localhost:5000",
+  "info": {
+    "description": "Documentation of our awesome API.",
+    "title": "CRUD",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/db": {
+      "get": {
+        "description": "returns database",
+        "operationId": "getDB",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/UsersGetResponse"
+          },
+          "400": {
+            "$ref": "#/responses/badRequest"
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      },
+      "post": {
+        "operationId": "newSTD",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Body",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/responses/badRequest"
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/db/{id}": {
+      "delete": {
+        "operationId": "deleteSTD",
+        "parameters": [
+          {
+            "description": "Specifies uuid for a user",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string",
+            "uniqueItems": true,
+            "x-go-name": "Id"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/responses/badRequest"
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      },
+      "get": {
+        "description": "returns user by specified id",
+        "operationId": "getSTD",
+        "parameters": [
+          {
+            "description": "Specifies uuid for a user",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string",
+            "uniqueItems": true,
+            "x-go-name": "Id"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/userGetResponse"
+          },
+          "400": {
+            "$ref": "#/responses/badRequest"
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    }
+  },
+  "responses": {
+    "UsersGetResponse": {
+      "description": "",
+      "schema": {
+        "items": {
+          "$ref": "#/definitions/User"
+        },
+        "type": "array"
+      }
+    },
+    "badRequest": {
+      "description": "Error struct with error explanation string"
+    },
+    "userGetResponse": {
+      "description": "",
+      "schema": {
+        "$ref": "#/definitions/User"
+      }
+    }
+  },
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0"
+}

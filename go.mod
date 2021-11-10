@@ -1,4 +1,4 @@
-module main
+module github.com/skskuzan/rest_api
 
 go 1.17
 
@@ -29,6 +29,7 @@ require (
 )
 
 require (
+	github.com/skskuzan/rest_api/docs v0.0.0-20211110154335-6b98650a2b72 // indirect
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14 // indirect
 	github.com/swaggo/http-swagger v1.1.2 // indirect
 )
