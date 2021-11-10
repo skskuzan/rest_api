@@ -10,7 +10,6 @@
 package swagger
 
 type User struct {
-
 	Id string `json:"Id,omitempty"`
 
 	Name string `json:"Name,omitempty"`
