@@ -1,8 +1,33 @@
 basePath: /
+definitions:
+  main.Student:
+    properties:
+      age:
+        type: string
+      id:
+        type: string
+      mail:
+        type: string
+      name:
+        type: string
+    type: object
 info:
   contact: {}
   description: API Server for Students
   title: Student App API
   version: "1.0"
-paths: {}
+paths:
+  /db:
+    get:
+      consumes:
+      - application/json
+      description: Get All Students
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Student'
+      summary: getDB
 swagger: "2.0"

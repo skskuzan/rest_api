@@ -11,7 +11,6 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-
 	_ "github.com/skskuzan/rest_api/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -37,6 +36,13 @@ type Student struct {
 	Age  string `json:"age"`
 }
 
+// getDB godoc
+// @Summary getDB
+// @Description Get All Students
+// @Accept json
+// @Produce json
+// @Success 200 {object} Student
+// @Router /db [get]
 func getDB(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, "Current Database:\n")

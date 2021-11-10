@@ -1,4 +1,4 @@
-module github.com/skskuzan/rest_api
+module rest_api
 
 go 1.17
 
@@ -17,6 +17,8 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
+	github.com/skskuzan/rest_api/docs v0.0.0-20211110154335-6b98650a2b72
+	github.com/swaggo/http-swagger v1.1.2
 	github.com/swaggo/swag v1.7.4
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
@@ -29,7 +31,7 @@ require (
 )
 
 require (
-	github.com/skskuzan/rest_api/docs v0.0.0-20211110154335-6b98650a2b72 // indirect
+	github.com/go-chi/chi v4.1.2+incompatible // indirect
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14 // indirect
-	github.com/swaggo/http-swagger v1.1.2 // indirect
+	github.com/swaggo/http-swagger/example/go-chi v0.0.0-20211012192856-5c56dbb3af38 // indirect
 )
