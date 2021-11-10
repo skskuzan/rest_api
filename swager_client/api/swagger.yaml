@@ -1,0 +1,120 @@
+---
+swagger: "2.0"
+info:
+  description: "Documentation of our awesome API."
+  version: "1.0.0"
+  title: "CRUD"
+host: "localhost:5000"
+basePath: "/"
+schemes:
+- "http"
+consumes:
+- "application/json"
+paths:
+  /db:
+    get:
+      tags:
+      - "users"
+      description: "returns database"
+      operationId: "getDB"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        "400":
+          description: "Error struct with error explanation string"
+    post:
+      tags:
+      - "users"
+      operationId: "newSTD"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "Body"
+        required: false
+        schema:
+          $ref: "#/definitions/User"
+        x-exportParamName: "Body"
+      responses:
+        "400":
+          description: "Error struct with error explanation string"
+  /db/{id}:
+    get:
+      tags:
+      - "users"
+      description: "returns user by specified id"
+      operationId: "getSTD"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Specifies uuid for a user"
+        required: true
+        type: "string"
+        uniqueItems: true
+        x-go-name: "Id"
+        x-exportParamName: "Id"
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Error struct with error explanation string"
+    delete:
+      tags:
+      - "users"
+      operationId: "deleteSTD"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Specifies uuid for a user"
+        required: true
+        type: "string"
+        uniqueItems: true
+        x-go-name: "Id"
+        x-exportParamName: "Id"
+      responses:
+        "400":
+          description: "Error struct with error explanation string"
+definitions:
+  User:
+    type: "object"
+    properties:
+      Id:
+        type: "string"
+      Name:
+        type: "string"
+      Mail:
+        type: "string"
+      Age:
+        type: "string"
+    example:
+      Mail: "Mail"
+      Id: "Id"
+      Age: "Age"
+      Name: "Name"
+    x-go-package: "softserve-academy-hw/StructUser"
+responses:
+  UsersGetResponse:
+    description: ""
+    schema:
+      type: "array"
+      items:
+        $ref: "#/definitions/User"
+  badRequest:
+    description: "Error struct with error explanation string"
+  userGetResponse:
+    description: ""
+    schema:
+      $ref: "#/definitions/User"
