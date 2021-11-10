@@ -3,7 +3,7 @@
 package docs
 
 import (
-	_ "github.com/skskuzan/rest_api/StructUser.go"
+	_ "github.com/skskuzan/rest_api/StructUser"
 )
 
 // Package classification CRUD
