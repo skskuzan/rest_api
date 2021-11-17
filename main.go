@@ -1,18 +1,23 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 
-	"database/sql"
+	"rest_api/database"
+	"rest_api/grpc/pkg/api"
+	"rest_api/grpc/pkg/crud"
+	"rest_api/vars"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/skskuzan/rest_api/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"google.golang.org/grpc"
 )
 
 // @title Student App API
@@ -26,34 +31,17 @@ import (
 // @in header
 // @name Authorization
 
-var db []Student
-var database *sql.DB
-
-type Student struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-	Mail string `json:"mail"`
-	Age  string `json:"age"`
-}
-
-// getDB godoc
-// @Summary getDB
-// @Description Get All Students
-// @Accept json
-// @Produce json
-// @Success 200 {object} Student
-// @Router /db [get]
 func getDB(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, "Current Database:\n")
-	rows, err := database.Query("select * from people")
+	rows, err := vars.Database.Query("select * from people")
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	p1 := make([]Student, 0)
+	p1 := make([]vars.Student, 0)
 	for rows.Next() {
-		p2 := Student{}
+		p2 := vars.Student{}
 		err := rows.Scan(&p2.Id, &p2.Name, &p2.Mail, &p2.Age)
 		if err != nil {
 			fmt.Println(err)
@@ -68,13 +56,13 @@ func getDB(w http.ResponseWriter, r *http.Request) {
 func getSTD(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
-	rows, err := database.Query("SELECT * FROM people WHERE id=" + params["id"])
+	rows, err := vars.Database.Query("SELECT * FROM people WHERE id=" + params["id"])
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	rows.Next()
-	p := Student{}
+	p := vars.Student{}
 	err = rows.Scan(&p.Id, &p.Name, &p.Mail, &p.Age)
 	if err != nil {
 		fmt.Println(err)
@@ -86,9 +74,9 @@ func getSTD(w http.ResponseWriter, r *http.Request) {
 func newSTD(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var std Student
+	var std vars.Student
 	json.NewDecoder(r.Body).Decode(&std)
-	_, err := database.Exec("INSERT INTO people (name, mail,age) VALUES ('" + std.Name + "','" + std.Mail + "','" + std.Age + "')")
+	_, err := vars.Database.Exec("INSERT INTO people (name, mail,age) VALUES ('" + std.Name + "','" + std.Mail + "','" + std.Age + "')")
 
 	if err != nil {
 		fmt.Println(err)
@@ -100,11 +88,11 @@ func newSTD(w http.ResponseWriter, r *http.Request) {
 }
 func changeSTD(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var std Student
+	var std vars.Student
 	json.NewDecoder(r.Body).Decode(&std)
 
 	params := mux.Vars(r)
-	_, err := database.Exec("UPDATE people SET name='" + std.Name + "', mail='" + std.Mail + "', age='" + std.Age + "' WHERE id=" + params["id"])
+	_, err := vars.Database.Exec("UPDATE people SET name='" + std.Name + "', mail='" + std.Mail + "', age='" + std.Age + "' WHERE id=" + params["id"])
 
 	if err != nil {
 		fmt.Println(err)
@@ -119,7 +107,7 @@ func changeSTD(w http.ResponseWriter, r *http.Request) {
 func deleteSTD(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
-	_, err := database.Exec("DELETE FROM people WHERE id=" + params["id"])
+	_, err := vars.Database.Exec("DELETE FROM people WHERE id=" + params["id"])
 
 	if err != nil {
 		fmt.Println(err)
@@ -128,17 +116,33 @@ func deleteSTD(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func Parallel(s *grpc.Server) {
+	l, err := net.Listen("tcp", ":5001")
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := s.Serve(l); err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
 	var err error
 
 	fmt.Println("Starting Router...")
 	mysql.DeregisterReaderHandler("hsas")
-	database, err = sql.Open("mysql", "veles-connect:kL7SMBVgEllwkOma@tcp(176.114.14.32:3306)/veles")
+	vars.Database, err = sql.Open("mysql", "veles-connect:kL7SMBVgEllwkOma@tcp(176.114.14.32:3306)/veles")
 	if err != nil {
 		log.Println(err)
 	}
 
-	db = append(db, Student{Id: "1", Name: "Oleksandr Kuzan"})
+	s := grpc.NewServer()
+	srv := &crud.GRPCServer{}
+	api.RegisterCRUDServer(s, srv)
+
+	database.SetupDBConn()
+
+	vars.DB = append(vars.DB, vars.Student{Id: "1", Name: "Oleksandr Kuzan"})
 
 	router := mux.NewRouter()
 	router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
@@ -147,14 +151,13 @@ func main() {
 		httpSwagger.DocExpansion("none"),
 		httpSwagger.DomID("#swagger-ui"),
 	))
-	headersOk := handlers.AllowedHeaders([]string{"*"})
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})
+
 	router.HandleFunc("/db", getDB).Methods("GET")
 	router.HandleFunc("/db/{id}", getSTD).Methods("GET")
 	router.HandleFunc("/db", newSTD).Methods("POST")
 	router.HandleFunc("/db/{id}", changeSTD).Methods("PUT")
 	router.HandleFunc("/del/{id}", deleteSTD).Methods("DELETE")
 
-	log.Fatal(http.ListenAndServe(":5000", handlers.CORS(originsOk, headersOk, methodsOk)(router)))
+	go Parallel(s)
+	log.Fatal(http.ListenAndServe(":5000", router))
 }

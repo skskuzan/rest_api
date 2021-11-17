@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package api;
+option go_package = "./"; 
+
+service CRUD {
+    rpc AddStd(AddRequest) returns (AddResponse) {}
+    rpc ReadStd(ReadRequest) returns (ReadResponse) {}
+    rpc ChangeStd(ChangeRequest) returns (ChangeResponse) {}
+    rpc DeleteStd(DelRequest) returns (DelResponse) {}
+    rpc ReadDB(DBRequest) returns (DBResponse) {}
+
+}
+
+message AddRequest{
+    string name = 1;
+    string mail = 2;
+    string age = 3;
+}
+
+message AddResponse{
+    string result = 1;
+}
+
+message ReadRequest{
+    int32 id = 1;
+}
+
+message ReadResponse{
+    string result = 1;
+}
+
+message ChangeRequest{
+    int32 id = 1;
+    string name = 2;
+    string mail = 3;
+    string age = 4;
+}
+
+message ChangeResponse{
+    string result = 1;
+}
+
+message DelRequest{
+    int32 id = 1;
+}
+
+message DelResponse{
+    string result = 1;
+}
+message DBRequest{
+}
+
+message DBResponse{
+    string result = 1;
+}
+
