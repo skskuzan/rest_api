@@ -1,4 +1,4 @@
-module github.com/skskuzan/rest_api/rest_api
+module github.com/skskuzan/rest_api
 
 go 1.17
 
